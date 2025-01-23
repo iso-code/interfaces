@@ -1,4 +1,4 @@
-Package: Interface
+Package: Interfaces
 Type: Package
 Title: Interfacing hydrological data
 Version: 0.1.0
