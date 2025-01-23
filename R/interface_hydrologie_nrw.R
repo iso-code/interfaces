@@ -15,6 +15,16 @@ check_hub <- function(hub) {
       paste(c("", names(default_hubs)), collapse = "\n"),
       "\nSee xxxx for more information.")
   }
+
+  if (!hub %in% names(default_hubs)) {
+    # Non-default KiWIS URL
+    api_url <- hub
+  }else{
+    api_url <- default_hubs[[which(names(default_hubs) == hub)]]
+  }
+
+
+  return(api_url)
 }
 
 get_rawdata_nrw <- function(hub, query, descr) {
