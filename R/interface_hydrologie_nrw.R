@@ -17,7 +17,6 @@ check_hub <- function(hub) {
   }
 }
 
-
 get_rawdata_nrw <- function(hub, query, descr) {
 
   check_hub(hub)
