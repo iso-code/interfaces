@@ -29,7 +29,7 @@ check_hub <- function(hub) {
 
 get_rawdata_nrw <- function(hub, query, descr) {
 
-  check_hub(hub)
+  hub<-check_hub(hub)
 
   if (missing(descr)) {
     descr <- "messwerte.txt"
