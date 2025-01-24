@@ -1,7 +1,3 @@
-if (!require(pacman)) install.packages('pacman')
-library(pacman)
-pacman::p_load(curl, tidyverse, tidyjson, jsonlite,install=TRUE)
-
 check_hub <- function(hub) {
   # Identify default hubs
   default_hubs <- list(
@@ -41,12 +37,16 @@ get_rawdata_nrw <- function(hub, query, descr) {
     }
   }
 
+
   loc <- paste(hub, query, sep = "")
   placeholder <- tempfile()
   curl_download(loc, destfile = placeholder)
-  con1 <- unzip(placeholder, descr)
+  con1 <- unzip(placeholder, files=descr)
   data<-vroom::vroom(con1,delim=";", col_names=TRUE,show_col_types = F)
+
   unlink(placeholder)
+  if(file.exists(file.path(".",descr))) file.remove(file.path(".",descr))
+
   return(data)
 
 }
