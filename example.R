@@ -1,15 +1,17 @@
 if (!require(pacman)) install.packages('pacman')
 library(pacman)
-pacman::p_load(curl, tidyverse, tidyjson, jsonlite,install=TRUE)
+pacman::p_load(curl, tidyverse, tidyjson, jsonlite, devtools, install=TRUE)
+install_github("iso-code/interfaces")
 library(Interfaces)
 
 #read datafile from hub
 hub<-"rawlanuv"
-query <- "messwerte.zip"
-data<-get_rawdata_nrw(hub,query)
+query <- "pegel"
+descr <- "pegel_stand"
+data<-get_rawdata_nrw(hub,query,descr)
 
 #read metadata from hub
-query <- "pegeldaten.zip"
+descr<-"pegel_stationen"
 metadata<-get_rawdata_nrw(hub,query,"pegel_stationen.txt")
 
 data$time<-ymd_hms(data$time)
