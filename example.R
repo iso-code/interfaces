@@ -1,8 +1,10 @@
-
-
-hub <- "https://hydrologie.nrw.de/lanuv/data/downloads/"
+if (!require(pacman)) install.packages('pacman')
+library(pacman)
+pacman::p_load(curl, tidyverse, tidyjson, jsonlite,install=TRUE)
+library(Interfaces)
 
 #read datafile from hub
+hub<-"rawlanuv"
 query <- "messwerte.zip"
 data<-get_rawdata_nrw(hub,query)
 
