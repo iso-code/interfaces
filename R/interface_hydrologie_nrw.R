@@ -40,12 +40,13 @@ get_rawdata_nrw <- function(hub, query, descr) {
 
   loc <- paste(hub, query, sep = "")
   placeholder <- tempfile()
+  explace <- tempfile()
   curl_download(loc, destfile = placeholder)
-  con1 <- unzip(placeholder, files=descr)
+  con1 <- unzip(placeholder, files=descr, exdir=explace)
   data<-vroom::vroom(con1,delim=";", col_names=TRUE,show_col_types = F)
 
   unlink(placeholder)
-  if(file.exists(file.path(".",descr))) file.remove(file.path(".",descr))
+  unlink(explace)
 
   return(data)
 
