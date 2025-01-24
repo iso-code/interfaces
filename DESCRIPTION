@@ -9,3 +9,19 @@ Description: This package aims to provide easy access to a variety of hydrologic
 License: GPL
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/iso-code/interfaces
+BugReports: https://github.com/iso-code/interfaces/issues
+Depends: 
+  R (>= 4.4.1.0)
+Imports:
+  pacman,
+  curl, 
+  tidyverse, 
+  tidyjson, 
+  jsonlite,
+  devtools
+Suggests:
+  ggplot2,
+  knitr,
+  rmarkdown,
+  
