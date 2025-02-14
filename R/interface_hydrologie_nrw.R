@@ -1,4 +1,16 @@
-
+#' Get the raw data from the LANUV datasource
+#'
+#' @export
+#' @description Returns a dataframe containing the most recent data.
+#' @param hub The file location you are querying data from. Either one of the defaults or a URL.
+#'  See \href{https://github.com/iso-code/interfaces}{README}.
+#' @param query the type of data either precipitation or water level data.
+#' @return A dataframe with three columns: station_no, time and value.
+#' @examples
+#' \dontrun{
+#' get_rawdata_nrw(hub = 'rawlanuv',query = 'pegel',descr = 'pegel_stand')
+#' }
+#'
 
 get_rawdata_nrw <- function(hub, query, descr) {
 
@@ -19,6 +31,7 @@ get_rawdata_nrw <- function(hub, query, descr) {
   return(data)
 
 }
+
 
 
 

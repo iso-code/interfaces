@@ -12,8 +12,12 @@ data<-get_rawdata_nrw(hub,query,descr)
 
 #read metadata from hub
 descr<-"pegel_stationen"
-metadata<-get_rawdata_nrw(hub,query,"pegel_stationen.txt")
+metadata<-get_rawdata_nrw(hub,query,descr)
 
 data$time<-ymd_hms(data$time)
 metadata$station_no[1]
 test<-data %>% filter(station_no %in% metadata$station_no[1])
+
+
+
+
