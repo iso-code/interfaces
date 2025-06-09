@@ -20,7 +20,7 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 
 
 ##############################
-#Example für OpenData hydroTSM
+#Example für OpenData hydro
 # Install and load the required packages
 page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
 
@@ -34,10 +34,13 @@ all_data <-download_and_bind_timeseries(page_url, zip_names, ezg, date_range)
 #zip_names_filtered <- zip_names[grepl(datumsbereich, zip_names)]
 #zip_names_filtered <- zip_names_filtered[grepl(ezg, zip_names_filtered)]
 
+# shape des Datensatzes
+page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/"
+zip_names <- list_hydrodata_files_nrw(page_url)
+
 data<-download_hydrodata_nrw(
   hub = page_url,
-  query = zip_names_filtered,
-  descr = descr_names_list[[1]][1]
+  query = zip_names[1]
 )
 
 descr_names_list <- descr_names(page_url, zip_names_filtered)

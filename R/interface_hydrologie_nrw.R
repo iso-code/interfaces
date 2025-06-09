@@ -1,5 +1,3 @@
-
-
 get_rawdata_nrw <- function(hub, query, descr) {
 
   hub<-check_hub(hub)
@@ -33,10 +31,11 @@ list_hydrodata_files_nrw <- function(page_url) {
     return(zip_names)
   }
 
-descr_names <- function(page_url, zip_names_filtered) {
+descr_names <- function(page_url, zip_names) {
   # Funktion, um die Dateinamen in den ZIPs zu extrahieren
   file_names <- list()
-  for (zip_url in zip_names_filtered) {
+  for (zip_url in zip_names) {
+    # Debug: Zeige den aktuellen ZIP-URL
     tmp_zip <- tempfile(fileext = ".zip")
     curl::curl_download(paste0(page_url, zip_url), tmp_zip)
     files_in_zip <- unzip(tmp_zip, list = TRUE)$Name
@@ -46,21 +45,34 @@ descr_names <- function(page_url, zip_names_filtered) {
   return(file_names)
 }
 
-download_hydrodata_nrw<-function(hub, query, descr) {
-  hub <- check_hub(hub)
-  query <- check_query_lanuv(query)
-  #descr <- check_descr_lanuv(descr)
-
-  loc <- paste(hub, query, sep = "")
-  placeholder <- tempfile()
+download_hydrodata_nrw <- function(hub, query, descr = NULL) {
+  placeholder <- tempfile(fileext = ".zip")
   explace <- tempfile()
-  curl_download(loc, destfile = placeholder)
-  con1 <- unzip(placeholder, files=descr, exdir=explace)
-  data <- vroom::vroom(con1, delim=";", col_names=TRUE, show_col_types = F)
-
+  curl::curl_download(paste0(hub,query), destfile = placeholder)
+  # Entpacken: alle Dateien oder nur bestimmte
+  if (is.null(descr)) {
+    files <- unzip(placeholder, exdir = explace)
+  } else {
+    files <- unzip(placeholder, files = descr, exdir = explace)
+  }
+  # Prüfe, ob ein Shapefile enthalten ist
+  shp_file <- files[grepl("\\.shp$", files, ignore.case = TRUE)]
+  if (length(shp_file) > 0) {
+    # Lade das Shapefile mit sf
+    if (!requireNamespace("sf", quietly = TRUE)) install.packages("sf")
+    library(sf)
+    data <- sf::st_read(shp_file[1], quiet = TRUE)
+  } else {
+    # Lade als Tabelle (CSV)
+    csv_file <- files[grepl("\\.csv$", files, ignore.case = TRUE)]
+    if (length(csv_file) > 0) {
+      data <- vroom::vroom(csv_file[1], delim = ";", col_names = TRUE, show_col_types = FALSE)
+    } else {
+      data <- NULL
+    }
+  }
   unlink(placeholder)
-  unlink(explace)
-
+  unlink(explace, recursive = TRUE)
   return(data)
 }
 
