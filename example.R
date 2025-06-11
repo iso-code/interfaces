@@ -34,7 +34,7 @@ all_data <-download_and_bind_timeseries(page_url, zip_names, ezg, date_range)
 #zip_names_filtered <- zip_names[grepl(datumsbereich, zip_names)]
 #zip_names_filtered <- zip_names_filtered[grepl(ezg, zip_names_filtered)]
 
-# shape des Datensatzes
+# shape oder csv der Metadaten des Datensatzes
 page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/"
 zip_names <- list_hydrodata_files_nrw(page_url)
 
@@ -43,4 +43,3 @@ data<-download_hydrodata_nrw(
   query = zip_names[1]
 )
 
-descr_names_list <- descr_names(page_url, zip_names_filtered)
