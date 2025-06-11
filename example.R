@@ -43,4 +43,15 @@ data<-download_hydrodata_nrw(
   query = zip_names[1]
 )
 
+
+page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
+dd<-find_and_bind_station_timeseries(page_url, zip_names, station_id = NULL,"Ahmsen", "1998", "2005")
+
+
 descr_names_list <- descr_names(page_url, zip_names_filtered)
+
+# Funktion zum Erstellen der Metadaten
+metadata <- create_metadata_nrw(page_url, zip_names)
+saveRDS(metadata, file = "metadata_nrw.rds")
+
+find_station_files_in_metadata(metadata, station_id = "Ahmsen", startjahr = 2000, endjahr = 2005)
