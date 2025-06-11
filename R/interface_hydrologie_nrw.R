@@ -119,3 +119,106 @@ download_and_bind_timeseries <- function(page_url, zip_names, ezg, date_range) {
   dplyr::bind_rows(all_data)
 }
 
+find_and_bind_station_timeseries <- function(page_url, zip_names, station_id = NULL, station_name = NULL, startjahr, endjahr) {
+  # Erstelle Regex für Stationsnummer oder -name
+  if (!is.null(station_id)) {
+    station_pattern <- paste0("^", station_id, "_")
+  } else if (!is.null(station_name)) {
+    station_pattern <- paste0("^[^_]+_", station_name, "_")
+  } else {
+    stop("Bitte entweder station_id oder station_name angeben.")
+  }
+  # Filtere ZIPs, deren Jahrbereich mit dem gewünschten Bereich überlappt
+  zip_names_filtered <- zip_names[sapply(zip_names, function(z) {
+    bereich <- regmatches(z, regexpr("\\d{4}-\\d{4}", z))
+    if (length(bereich) == 1) {
+      jahr_start <- as.numeric(sub("-.*", "", bereich))
+      jahr_ende <- as.numeric(sub(".*-", "", bereich))
+      return(jahr_start <= endjahr && jahr_ende >= startjahr)
+    }
+    FALSE
+  })]
+  descrs <- descr_names(page_url, zip_names_filtered)
+
+  all_data <- list()
+  for (zip_url in names(descrs)) {
+    files_in_zip <- descrs[[zip_url]]
+    # Finde alle passenden Dateien im ZIP, deren Jahrbereich mit dem gewünschten Bereich überlappt
+    matching_files <- files_in_zip[
+      grepl(station_pattern, files_in_zip) &
+      sapply(files_in_zip, function(f) {
+        bereich <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
+        if (length(bereich) == 1) {
+          jahr_start <- as.numeric(sub("-.*", "", bereich))
+          jahr_ende <- as.numeric(sub(".*-", "", bereich))
+          jahr_start <= endjahr && jahr_ende >= startjahr
+        } else {
+          FALSE
+        }
+      })
+    ]
+    if (length(matching_files) == 0) next
+    tmp_zip <- tempfile(fileext = ".zip")
+    curl::curl_download(paste0(page_url, zip_url), tmp_zip)
+    for (file in matching_files) {
+      data <- vroom::vroom(
+        unz(tmp_zip, file),
+        delim = ";",
+        show_col_types = FALSE,
+        locale = vroom::locale(decimal_mark = ",")
+      )
+      all_data[[paste(zip_url, file, sep = "_")]] <- data
+    }
+    unlink(tmp_zip)
+  }
+  if (length(all_data) == 0) return(NULL)
+  dplyr::bind_rows(all_data)
+}
+
+
+create_metadata_nrw <- function(page_url, zip_names) {
+  descrs <- descr_names(page_url, zip_names)
+  meta <- data.frame()
+  for (zip in names(descrs)) {
+    files <- descrs[[zip]]
+    if (length(files) == 0) next
+    # Extrahiere Infos aus Dateinamen
+    info <- do.call(rbind, lapply(files, function(f) {
+      # Beispielname: 2718193000100_Ahrhuette-Neuhof_1980-1989_Abfluss_m3s.csv
+      parts <- unlist(strsplit(f, "_"))
+      jahr <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
+      jahr_start <- as.numeric(sub("-.*", "", jahr))
+      jahr_ende <- as.numeric(sub(".*-", "", jahr))
+      data.frame(
+        zip = zip,
+        file = f,
+        station_id = parts[1],
+        station_name = parts[2],
+        jahr_start = jahr_start,
+        jahr_ende = jahr_ende,
+        typ = ifelse(length(parts) > 4, parts[4], NA),
+        einheit = ifelse(length(parts) > 5, gsub("\\.csv$", "", parts[5]), NA),
+        stringsAsFactors = FALSE
+      )
+    }))
+    meta <- rbind(meta, info)
+  }
+  meta
+}
+
+find_station_files_in_metadata <- function(metadata, station_id = NULL, station_name = NULL, startjahr, endjahr) {
+  # Filter nach Stationsnummer oder -name
+  if (!is.null(station_id)) {
+    sel <- metadata$station_id == station_id
+  } else if (!is.null(station_name)) {
+    sel <- metadata$station_name == station_name
+  } else {
+    stop("Bitte entweder station_id oder station_name angeben.")
+  }
+  # Filter nach Jahrbereich (Überlappung)
+  sel <- sel & metadata$jahr_start <= endjahr & metadata$jahr_ende >= startjahr
+  # Ergebnis als Dataframe mit zip und file
+  result <- metadata[sel, c("zip", "file")]
+  rownames(result) <- NULL
+  result
+}
