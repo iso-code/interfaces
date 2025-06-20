@@ -25,6 +25,13 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
 
 zip_names <- list_hydrodata_files_nrw(page_url)
+
+#nur zum Update des Datensatzes notwendig, Änderungen selten (jährlich)
+#meta_data<-create_metadata_nrw(page_url,zip_names)
+#saveRDS(meta_data,"meta_data.rds")
+
+
+
 # Beispiel-Datumsbereich (ersetze durch input$plot_range in Shiny)
 date_range <- as.Date(c("2020-01-01", "2022-12-31"))
 ezg <- "Weserzufluesse"
