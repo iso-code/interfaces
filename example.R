@@ -21,25 +21,24 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 
 ##############################
 #Example für OpenData hydro
-# Install and load the required packages
 page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
-
 zip_names <- list_hydrodata_files_nrw(page_url)
 
 #nur zum Update des Datensatzes notwendig, Änderungen selten (jährlich)
 #meta_data<-create_metadata_nrw(page_url,zip_names)
 #saveRDS(meta_data,"meta_data.rds")
-
-
+meta_data<-readRDS("meta_data.rds")
 
 # Beispiel-Datumsbereich (ersetze durch input$plot_range in Shiny)
-date_range <- as.Date(c("2020-01-01", "2022-12-31"))
+date_range <- as.Date(c("1964-11-01", "2022-11-01"))
 ezg <- "Weserzufluesse"
-# Funktion zum Filtern der ZIP-Namen nach Datumsbereich
-all_data <-download_and_bind_timeseries(page_url, zip_names, ezg, date_range)
 
-#zip_names_filtered <- zip_names[grepl(datumsbereich, zip_names)]
-#zip_names_filtered <- zip_names_filtered[grepl(ezg, zip_names_filtered)]
+file_index<-find_station_files_in_metadata(meta_data, station_id = NULL, station_name = c("Ahmsen","Welz"), date_range[1], date_range[2])
+startjahr<-date_range[1]
+endjahr<- date_range[2]
+dataset<-load_filtered_station_data(page_url, file_index, 2000, 2022)
+
+###################################
 
 # shape oder csv der Metadaten des Datensatzes
 page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/"
@@ -51,8 +50,3 @@ data<-download_hydrodata_nrw(
 )
 
 
-page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
-dd<-find_and_bind_station_timeseries(page_url, zip_names, station_id = NULL,"Ahmsen", "1998", "2005")
-
-
-descr_names_list <- descr_names(page_url, zip_names_filtered)

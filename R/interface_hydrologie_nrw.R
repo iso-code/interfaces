@@ -90,92 +90,6 @@ filter_zip_by_daterange <- function(zip_names, date_range) {
   })]
 }
 
-download_and_bind_timeseries <- function(page_url, zip_names, ezg, date_range) {
-  # Filtere nach Einzugsgebiet und Datumsbereich
-  zip_names_ezg <- zip_names[grepl(ezg, zip_names)]
-  zip_names_filtered <- filter_zip_by_daterange(zip_names_ezg, date_range)
-  descr_names_list <- descr_names(page_url, zip_names_filtered)
-  
-  all_data <- list()
-  for (i in seq_along(zip_names_filtered)) {
-    zip_url <- zip_names_filtered[i]
-    files_in_zip <- descr_names_list[[zip_url]]
-    # Hier ggf. weitere Filterung der Dateien im ZIP, z.B. nach Stationsname
-    # Beispiel: alle Dateien laden
-    for (file in files_in_zip) {
-      tmp_zip <- tempfile(fileext = ".zip")
-      curl::curl_download(paste0(page_url, zip_url), tmp_zip)
-      data <- vroom::vroom(
-        unz(tmp_zip, file),
-        delim = ";",
-        show_col_types = FALSE,
-        locale = vroom::locale(decimal_mark = ",")
-      )
-      unlink(tmp_zip)
-      all_data[[paste(zip_url, file, sep = "_")]] <- data
-    }
-  }
-  # Alle Zeitreihen zusammenfügen
-  dplyr::bind_rows(all_data)
-}
-
-find_and_bind_station_timeseries <- function(page_url, zip_names, station_id = NULL, station_name = NULL, startjahr, endjahr) {
-  # Erstelle Regex für Stationsnummer oder -name
-  if (!is.null(station_id)) {
-    station_pattern <- paste0("^", station_id, "_")
-  } else if (!is.null(station_name)) {
-    station_pattern <- paste0("^[^_]+_", station_name, "_")
-  } else {
-    stop("Bitte entweder station_id oder station_name angeben.")
-  }
-  # Filtere ZIPs, deren Jahrbereich mit dem gewünschten Bereich überlappt
-  zip_names_filtered <- zip_names[sapply(zip_names, function(z) {
-    bereich <- regmatches(z, regexpr("\\d{4}-\\d{4}", z))
-    if (length(bereich) == 1) {
-      jahr_start <- as.numeric(sub("-.*", "", bereich))
-      jahr_ende <- as.numeric(sub(".*-", "", bereich))
-      return(jahr_start <= endjahr && jahr_ende >= startjahr)
-    }
-    FALSE
-  })]
-  descrs <- descr_names(page_url, zip_names_filtered)
-
-  all_data <- list()
-  for (zip_url in names(descrs)) {
-    files_in_zip <- descrs[[zip_url]]
-    # Finde alle passenden Dateien im ZIP, deren Jahrbereich mit dem gewünschten Bereich überlappt
-    matching_files <- files_in_zip[
-      grepl(station_pattern, files_in_zip) &
-      sapply(files_in_zip, function(f) {
-        bereich <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
-        if (length(bereich) == 1) {
-          jahr_start <- as.numeric(sub("-.*", "", bereich))
-          jahr_ende <- as.numeric(sub(".*-", "", bereich))
-          jahr_start <= endjahr && jahr_ende >= startjahr
-        } else {
-          FALSE
-        }
-      })
-    ]
-    if (length(matching_files) == 0) next
-    tmp_zip <- tempfile(fileext = ".zip")
-    curl::curl_download(paste0(page_url, zip_url), tmp_zip)
-    for (file in matching_files) {
-      data <- vroom::vroom(
-        unz(tmp_zip, file),
-        delim = ";",
-        show_col_types = FALSE,
-        locale = vroom::locale(decimal_mark = ",")
-      )
-      all_data[[paste(zip_url, file, sep = "_")]] <- data
-    }
-    unlink(tmp_zip)
-  }
-  if (length(all_data) == 0) return(NULL)
-  dplyr::bind_rows(all_data)
-}
-
-
 create_metadata_nrw <- function(page_url, zip_names) {
   descrs <- descr_names(page_url, zip_names)
   meta <- data.frame()
@@ -221,4 +135,72 @@ find_station_files_in_metadata <- function(metadata, station_id = NULL, station_
   result <- metadata[sel, c("zip", "file")]
   rownames(result) <- NULL
   result
+}
+
+#####################
+library(dplyr)
+library(vroom)
+library(curl)
+
+load_filtered_station_data <- function(page_url, file_index, startjahr, endjahr) {
+  
+  # Filter ZIP-Dateien und Dateien nach Jahr
+  file_index_filtered <- file_index %>%
+    filter(sapply(file, function(f) {
+      year_range <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
+      if (length(year_range) == 1) {
+        jahr_start <- as.numeric(sub("-.*", "", year_range))
+        jahr_ende <- as.numeric(sub(".*-", "", year_range))
+        jahr_start <= endjahr && jahr_ende >= startjahr
+      } else {
+        FALSE
+      }
+    }))
+  
+  if (nrow(file_index_filtered) == 0) {
+    warning("Keine Dateien im angegebenen Zeitraum gefunden.")
+    return(NULL)
+  }
+  
+  all_data <- list()
+  
+  # Gruppiere nach ZIP-Datei, lade und verarbeite alle relevanten Dateien
+  zip_groups <- split(file_index_filtered$file, file_index_filtered$zip)
+  
+  for (zip_name in names(zip_groups)) {
+    files_to_load <- zip_groups[[zip_name]]
+    zip_url <- paste0(page_url, zip_name)
+    
+    tmp_zip <- tempfile(fileext = ".zip")
+    curl::curl_download(zip_url, tmp_zip)
+    
+    for (file in files_to_load) {
+      df <- vroom::vroom(
+        unz(tmp_zip, file),
+        delim = ";",
+        show_col_types = FALSE,
+        locale = vroom::locale(decimal_mark = ",")
+      )
+      
+      # Dynamisch die "value"-Spalte suchen und umwandeln, falls vorhanden
+      value_cols <- grep("^value", names(df), value = TRUE)
+      if (length(value_cols) > 0) {
+        for (colname in value_cols) {
+          if(length(grep("LUECKE",df[[colname]]))!=0)
+          {
+             df[[colname]] <- na_if(df[[colname]], "LUECKE")
+             df[[colname]] <- as.numeric(df[[colname]])
+          }
+        }
+      }
+      
+      all_data[[paste(zip_name, file, sep = "_")]] <- df
+    }
+    
+    unlink(tmp_zip)
+  }
+  
+  if (length(all_data) == 0) return(NULL)
+  
+  dplyr::bind_rows(all_data)
 }
