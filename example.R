@@ -1,6 +1,7 @@
 if (!require(pacman)) install.packages('pacman')
 library(pacman)
-pacman::p_load(curl, tidyverse, tidyjson, jsonlite, devtools, install=TRUE)
+pacman::p_load(curl, tidyverse, tidyjson, jsonlite, devtools, vroom, install=TRUE)
+#####################
 install_github("iso-code/interfaces")
 library(Interfaces)
 
@@ -21,13 +22,12 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 
 ##############################
 #Example für OpenData hydro
-page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
-zip_names <- list_hydrodata_files_nrw(page_url)
+page_url = check_hub("verified_level_nrw")
 
 #nur zum Update des Datensatzes notwendig, Änderungen selten (jährlich)
-#meta_data<-create_metadata_nrw(page_url,zip_names)
-#saveRDS(meta_data,"meta_data.rds")
-meta_data<-readRDS("meta_data.rds")
+page_tree<-create_pagetree(page_url)
+#saveRDS(page_tree,"page_tree_W.rds")
+page_tree<-readRDS("page_tree_W.rds")
 
 # Beispiel-Datumsbereich (ersetze durch input$plot_range in Shiny)
 date_range <- as.Date(c("1964-11-01", "2022-11-01"))

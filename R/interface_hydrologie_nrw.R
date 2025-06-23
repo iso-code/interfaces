@@ -18,24 +18,12 @@ get_rawdata_nrw <- function(hub, query, descr) {
 
 }
 
-list_hydrodata_files_nrw <- function(page_url) {
-    html <- httr::GET(page_url)
-    content <- httr::content(html, as = "text", encoding = "UTF-8")
-    # Debug: Zeige einen Ausschnitt des HTMLs
-    # cat(substr(content, 1, 2000))
-    # Robustere Regex für href mit .zip (doppelte oder einfache Anführungszeichen)
-    zip_names <- regmatches(content, gregexpr('"name":"([^"]+\\.zip)"', content))[[1]]
-    zip_names <- gsub('.*"name":"([^"]+\\.zip)".*', '\\1', zip_names)
-    zip_names <- unique(zip_names)
-    # Absolute URLs bauen
-    return(zip_names)
-  }
-
 descr_names <- function(page_url, zip_names) {
   # Funktion, um die Dateinamen in den ZIPs zu extrahieren
   file_names <- list()
   for (zip_url in zip_names) {
     # Debug: Zeige den aktuellen ZIP-URL
+    print(zip_url)
     tmp_zip <- tempfile(fileext = ".zip")
     curl::curl_download(paste0(page_url, zip_url), tmp_zip)
     files_in_zip <- unzip(tmp_zip, list = TRUE)$Name
@@ -90,8 +78,9 @@ filter_zip_by_daterange <- function(zip_names, date_range) {
   })]
 }
 
-create_metadata_nrw <- function(page_url, zip_names) {
-  descrs <- descr_names(page_url, zip_names)
+create_pagetree <- function(page_url) {
+  zip_names <-  list_page_zips(page_url) 
+  descrs    <-  descr_names(page_url, zip_names)
   meta <- data.frame()
   for (zip in names(descrs)) {
     files <- descrs[[zip]]
@@ -137,10 +126,7 @@ find_station_files_in_metadata <- function(metadata, station_id = NULL, station_
   result
 }
 
-#####################
-library(dplyr)
-library(vroom)
-library(curl)
+
 
 load_filtered_station_data <- function(page_url, file_index, startjahr, endjahr) {
   

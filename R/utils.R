@@ -1,7 +1,9 @@
 check_hub <- function(hub) {
   # Identify default hubs
   default_hubs <- list(
-    "rawlanuv" = "https://hydrologie.nrw.de/lanuv/data/downloads/"
+    "raw_nrw" = "https://hydrologie.nrw.de/lanuv/data/downloads/",
+    "verified_level_nrw" ="https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/w/",
+    "verified_runoff_nrw" = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
   )
 
   # Hub selection
@@ -13,7 +15,7 @@ check_hub <- function(hub) {
   }
 
   if (!hub %in% names(default_hubs)) {
-    # Non-default KiWIS URL
+    # Non-default URL
     api_url <- hub
   }else{
     api_url <- default_hubs[[which(names(default_hubs) == hub)]]
@@ -79,3 +81,15 @@ check_descr_lanuv <- function(descr){
 }
 
 
+list_page_zips <- function(page_url) {
+    html <- httr::GET(page_url)
+    content <- httr::content(html, as = "text", encoding = "UTF-8")
+    # Debug: Zeige einen Ausschnitt des HTMLs
+    # cat(substr(content, 1, 2000))
+    # Regex für href mit .zip (doppelte oder einfache Anführungszeichen)
+    zip_names <- regmatches(content, gregexpr('"name":"([^"]+\\.zip)"', content))[[1]]
+    zip_names <- gsub('.*"name":"([^"]+\\.zip)".*', '\\1', zip_names)
+    zip_names <- unique(zip_names)
+    # Absolute URLs bauen
+    return(zip_names)
+  }
