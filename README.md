@@ -11,11 +11,11 @@ library(interfaces)
 Aktuell lassen sich Datenquellen wie folgt ermitteln
 check_hub("type")
 
-type                |  content
-------------------------------------------------
-raw_nrw             |  Rohdaten der Pegelstände
-verified_runoff_nrw |  geprüfte Abflussdaten
-verified_level_nrw  |  geprüfte Wasserstandsdaten
+|type                |  content                   |
+|--------------------|----------------------------|
+|raw_nrw             |  Rohdaten der Pegelstände  |
+|verified_runoff_nrw |  geprüfte Abflussdaten     |
+|verified_level_nrw  |  geprüfte Wasserstandsdaten|
 
 
 
