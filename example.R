@@ -25,7 +25,7 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 page_url = check_hub("verified_level_nrw")
 
 #nur zum Update des Datensatzes notwendig, Änderungen selten (jährlich)
-page_tree<-create_pagetree(page_url)
+page_tree<-get_pagetree(page_url)
 #saveRDS(page_tree,"page_tree_W.rds")
 page_tree<-readRDS("page_tree_W.rds")
 
@@ -42,7 +42,7 @@ dataset<-load_filtered_station_data(page_url, file_index, 2000, 2022)
 
 # shape oder csv der Metadaten des Datensatzes
 page_url = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/"
-zip_names <- list_hydrodata_files_nrw(page_url)
+zip_names <- get_pagetree(page_url)
 
 data<-download_hydrodata_nrw(
   hub = page_url,

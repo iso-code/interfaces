@@ -78,7 +78,7 @@ filter_zip_by_daterange <- function(zip_names, date_range) {
   })]
 }
 
-create_pagetree <- function(page_url) {
+get_pagetree <- function(page_url) {
   zip_names <-  list_page_zips(page_url) 
   descrs    <-  descr_names(page_url, zip_names)
   meta <- data.frame()

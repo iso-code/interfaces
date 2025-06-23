@@ -4,9 +4,7 @@ library(plotly)
 library(vroom)
 library(dplyr)
 
-page_url <- "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
-zip_names <- list_hydrodata_files_nrw(page_url)
-ezg_liste <- unique(sub("-.*", "", zip_names))
+
 
 # Hilfsfunktion: Datumsbereich aus ZIP-Namen extrahieren
 extract_years <- function(zip_names) {

@@ -21,4 +21,9 @@ check_hub("type")
 
 
 # Beispielaufruf einer Funktion
-result <- get_hydrological_data("Basis_Url", parameters)
+In der Datei example.R finden sich Beispiele für Datenanfragen
+
+
+
+
+
