@@ -1,7 +1,7 @@
 check_hub <- function(hub) {
   # Identify default hubs
   default_hubs <- list(
-    "raw_nrw" = "https://hydrologie.nrw.de/lanuv/data/downloads/",
+    "raw_nrw" = "https://www.hochwasserportal.nrw/data/downloads/",
     "verified_level_nrw" ="https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/w/",
     "verified_runoff_nrw" = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"
   )
