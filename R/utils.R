@@ -1,6 +1,7 @@
 check_hub <- function(hub) {
   # Identify default hubs
   default_hubs <- list(
+    "kisters" = "http://kiwis.kisters.de/KiWIS/KiWIS?",
     "raw_nrw" = "https://www.hochwasserportal.nrw/data/downloads/",
     "verified_level_nrw" ="https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/w/",
     "verified_runoff_nrw" = "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/q/"

@@ -9,6 +9,7 @@ library(Interfaces)
 hub<-"rawlanuv"
 query <- "pegel"
 descr <- "pegel_stand"
+#
 data<-get_rawdata_nrw(hub,query,descr)
 
 #read metadata from hub
