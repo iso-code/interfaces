@@ -1,13 +1,13 @@
-#' Lade Rohdaten aus NRW ZIP-Datei herunter und lese sie ein
+#' Download and read raw NRW data from ZIP file
 #'
-#' Diese Funktion lädt eine ZIP-Datei von `hub + query` herunter,
-#' entpackt eine Datei namens `descr` und liest diese CSV-Datei ein.
+#' This function downloads a ZIP file from `hub + query`,
+#' extracts a file named `descr`, and reads this CSV file.
 #'
-#' @param hub Character. Basis-URL oder Pfad zum Daten-Hub.
-#' @param query Character. Pfad oder Query-String, der an `hub` angehängt wird.
-#' @param descr Character. Dateiname innerhalb der ZIP-Datei, der entpackt und eingelesen wird.
+#' @param hub Character. Base URL or path to the data hub.
+#' @param query Character. Path or query string appended to `hub`.
+#' @param descr Character. Filename inside the ZIP file to extract and read.
 #'
-#' @return Ein `data.frame` oder `tibble` mit den geladenen Daten.
+#' @return A `data.frame` or `tibble` with the loaded data.
 #' @importFrom curl curl_download
 #' @importFrom vroom vroom
 #' @export
@@ -29,14 +29,14 @@ get_rawdata_nrw <- function(hub, query, descr) {
   return(data)
 }
 
-#' Extrahiere Dateinamen aus ZIP-Archiven auf einer Webseite
+#' Extract file names from ZIP archives on a web page
 #'
-#' Lädt mehrere ZIP-Dateien von der Webseite und extrahiert die darin enthaltenen Dateinamen.
+#' Downloads multiple ZIP files from the web page and extracts the contained file names.
 #'
-#' @param page_url Character. Basis-URL der Webseite, auf der die ZIP-Dateien liegen.
-#' @param zip_names Character vector. Namen der ZIP-Dateien.
+#' @param page_url Character. Base URL of the web page containing the ZIP files.
+#' @param zip_names Character vector. Names of the ZIP files.
 #'
-#' @return Liste mit ZIP-Dateinamen als Keys und Vektor der enthaltenen Dateien als Werte.
+#' @return List with ZIP file names as keys and vectors of contained files as values.
 #' @importFrom curl curl_download
 #' @export
 descr_names <- function(page_url, zip_names) {
@@ -52,16 +52,16 @@ descr_names <- function(page_url, zip_names) {
   return(file_names)
 }
 
-#' Lade Hydrodaten aus ZIP-Archiv herunter und lese Shapefile oder CSV ein
+#' Download hydro data from ZIP archive and read shapefile or CSV
 #'
-#' Lädt eine ZIP-Datei von `hub + query` herunter, entpackt entweder alle Dateien oder nur
-#' die angegebenen `descr`, und liest ein Shapefile oder CSV-Datei ein.
+#' Downloads a ZIP file from `hub + query`, extracts either all files or only
+#' the specified `descr`, and reads a shapefile or CSV file.
 #'
-#' @param hub Character. Basis-URL oder Pfad.
-#' @param query Character. Dateipfad oder Query-String.
-#' @param descr Character or NULL. Optional: Nur diese Dateien entpacken.
+#' @param hub Character. Base URL or path.
+#' @param query Character. File path or query string.
+#' @param descr Character or NULL. Optional: Only extract these files.
 #'
-#' @return Ein sf-Objekt (bei Shapefile) oder data.frame (bei CSV) oder NULL, wenn keine Datei gefunden wurde.
+#' @return An sf object (for shapefile), data.frame (for CSV), or NULL if no file found.
 #' @importFrom curl curl_download
 #' @importFrom vroom vroom
 #' @import sf
@@ -93,37 +93,37 @@ download_hydrodata_nrw <- function(hub, query, descr = NULL) {
   return(data)
 }
 
-#' Filtere ZIP-Dateinamen nach Jahresbereich
+#' Filter ZIP file names by year range
 #'
-#' Filtert eine Liste von ZIP-Dateinamen, die einen Jahresbereich (z.B. "1980-1989") enthalten,
-#' und gibt nur jene zurück, die mit dem angegebenen Datumsbereich überlappen.
+#' Filters a list of ZIP file names containing a year range (e.g., "1980-1989"),
+#' and returns only those overlapping with the specified date range.
 #'
-#' @param zip_names Character vector. ZIP-Dateinamen mit Jahresbereich im Namen.
-#' @param date_range Date vector der Länge 2 (Start- und Enddatum).
+#' @param zip_names Character vector. ZIP file names with year range in the name.
+#' @param date_range Date vector of length 2 (start and end date).
 #'
-#' @return Gefilterter Character vector der ZIP-Dateinamen.
+#' @return Filtered character vector of ZIP file names.
 #' @export
 filter_zip_by_daterange <- function(zip_names, date_range) {
   jahr_von <- as.numeric(format(date_range[1], "%Y"))
   jahr_bis <- as.numeric(format(date_range[2], "%Y"))
   zip_names[sapply(zip_names, function(z) {
-    bereich <- regmatches(z, regexpr("\\d{4}-\\d{4}", z))
-    if (length(bereich) == 1) {
-      jahr_start <- as.numeric(sub("-.*", "", bereich))
-      jahr_ende <- as.numeric(sub(".*-", "", bereich))
-      return(jahr_start <= jahr_bis && jahr_ende >= jahr_von)
+    range <- regmatches(z, regexpr("\\d{4}-\\d{4}", z))
+    if (length(range) == 1) {
+      year_start <- as.numeric(sub("-.*", "", range))
+      year_end <- as.numeric(sub(".*-", "", range))
+      return(year_start <= jahr_bis && year_end >= jahr_von)
     }
     FALSE
   })]
 }
 
-#' Liste ZIP-Dateinamen von einer Seite aus
+#' List ZIP file names from a web page
 #'
-#' Lädt die HTML-Seite und extrahiert alle ZIP-Dateinamen aus JSON-ähnlichen Strukturen.
+#' Loads the HTML page and extracts all ZIP file names from JSON-like structures.
 #'
-#' @param page_url Character. URL der Webseite.
+#' @param page_url Character. URL of the web page.
 #'
-#' @return Character vector mit ZIP-Dateinamen.
+#' @return Character vector with ZIP file names.
 #' @importFrom httr GET content
 #' @export
 list_page_zips <- function(page_url) {
@@ -135,13 +135,13 @@ list_page_zips <- function(page_url) {
   return(zip_names)
 }
 
-#' Erstelle Metadaten-Tabelle mit Informationen zu ZIP-Dateien und deren Inhalten
+#' Create metadata table with information about ZIP files and their contents
 #'
-#' Liest alle ZIP-Dateinamen einer Seite aus und extrahiert Informationen aus den Dateinamen der ZIP-Inhalte.
+#' Reads all ZIP file names from a page and extracts information from the file names of the ZIP contents.
 #'
-#' @param page_url Character. URL der Seite mit ZIP-Dateien.
+#' @param page_url Character. URL of the page with ZIP files.
 #'
-#' @return data.frame mit Metadaten zu ZIP und enthaltenen Dateien.
+#' @return data.frame with metadata about ZIP and contained files.
 #' @export
 get_pagetree <- function(page_url) {
   zip_names <- list_page_zips(page_url)
@@ -152,18 +152,18 @@ get_pagetree <- function(page_url) {
     if (length(files) == 0) next
     info <- do.call(rbind, lapply(files, function(f) {
       parts <- unlist(strsplit(f, "_"))
-      jahr <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
-      jahr_start <- as.numeric(sub("-.*", "", jahr))
-      jahr_ende <- as.numeric(sub(".*-", "", jahr))
+      year <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
+      year_start <- as.numeric(sub("-.*", "", year))
+      year_end <- as.numeric(sub(".*-", "", year))
       data.frame(
         zip = zip,
         file = f,
         station_id = parts[1],
         station_name = parts[2],
-        jahr_start = jahr_start,
-        jahr_ende = jahr_ende,
-        typ = ifelse(length(parts) > 4, parts[4], NA),
-        einheit = ifelse(length(parts) > 5, gsub("\\.csv$", "", parts[5]), NA),
+        year_start = year_start,
+        year_end = year_end,
+        type = ifelse(length(parts) > 4, parts[4], NA),
+        unit = ifelse(length(parts) > 5, gsub("\\.csv$", "", parts[5]), NA),
         stringsAsFactors = FALSE
       )
     }))
@@ -172,62 +172,62 @@ get_pagetree <- function(page_url) {
   return(meta)
 }
 
-#' Finde Stationsdateien in Metadaten nach ID oder Namen und Jahrbereich
+#' Find station files in metadata by ID or name and year range
 #'
-#' Filtert Metadaten nach Station-ID oder -Name und einem Zeitraum (Start- und Endjahr).
+#' Filters metadata by station ID or name and a time period (start and end year).
 #'
-#' @param metadata data.frame. Metadaten mit Spalten 'station_id', 'station_name', 'jahr_start', 'jahr_ende', 'zip', 'file'.
-#' @param station_id Character or NULL. Stations-ID zum Filtern.
-#' @param station_name Character or NULL. Stationsname zum Filtern.
-#' @param startjahr Numeric. Startjahr.
-#' @param endjahr Numeric. Endjahr.
+#' @param metadata data.frame. Metadata with columns 'station_id', 'station_name', 'year_start', 'year_end', 'zip', 'file'.
+#' @param station_id Character or NULL. Station ID to filter.
+#' @param station_name Character or NULL. Station name to filter.
+#' @param startyear Numeric. Start year.
+#' @param endyear Numeric. End year.
 #'
-#' @return data.frame mit Spalten 'zip' und 'file' der passenden Dateien.
+#' @return data.frame with columns 'zip' and 'file' of matching files.
 #' @export
-find_station_files_in_metadata <- function(metadata, station_id = NULL, station_name = NULL, startjahr, endjahr) {
+find_station_files_in_metadata <- function(metadata, station_id = NULL, station_name = NULL, startyear, endyear) {
   if (!is.null(station_id)) {
     sel <- metadata$station_id == station_id
   } else if (!is.null(station_name)) {
     sel <- metadata$station_name == station_name
   } else {
-    stop("Bitte entweder station_id oder station_name angeben.")
+    stop("Please provide either station_id or station_name.")
   }
-  sel <- sel & metadata$jahr_start <= endjahr & metadata$jahr_ende >= startjahr
+  sel <- sel & metadata$year_start <= endyear & metadata$year_end >= startyear
   result <- metadata[sel, c("zip", "file")]
   rownames(result) <- NULL
   return(result)
 }
 
-#' Lade gefilterte Stationsdaten aus ZIP-Archiven und verbinde sie
+#' Load filtered station data from ZIP archives and combine them
 #'
-#' Lädt alle relevanten Dateien aus ZIP-Archiven für den angegebenen Jahrbereich,
-#' liest die CSV-Daten ein und verbindet sie zu einem Datenrahmen.
+#' Loads all relevant files from ZIP archives for the specified year range,
+#' reads the CSV data, and combines them into a data frame.
 #'
-#' @param page_url Character. Basis-URL der Seite mit ZIP-Dateien.
-#' @param file_index data.frame mit Spalten 'zip' und 'file'.
-#' @param startjahr Numeric. Startjahr für Filterung.
-#' @param endjahr Numeric. Endjahr für Filterung.
+#' @param page_url Character. Base URL of the page with ZIP files.
+#' @param file_index data.frame with columns 'zip' and 'file'.
+#' @param startyear Numeric. Start year for filtering.
+#' @param endyear Numeric. End year for filtering.
 #'
-#' @return data.frame mit zusammengefügten Daten oder NULL, wenn keine Dateien gefunden.
+#' @return data.frame with combined data or NULL if no files found.
 #' @importFrom dplyr filter bind_rows
 #' @importFrom vroom vroom locale
 #' @importFrom stats na_if
 #' @export
-load_filtered_station_data <- function(page_url, file_index, startjahr, endjahr) {
+load_filtered_station_data <- function(page_url, file_index, startyear, endyear) {
   file_index_filtered <- file_index %>%
     dplyr::filter(sapply(file, function(f) {
       year_range <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
       if (length(year_range) == 1) {
-        jahr_start <- as.numeric(sub("-.*", "", year_range))
-        jahr_ende <- as.numeric(sub(".*-", "", year_range))
-        jahr_start <= endjahr && jahr_ende >= startjahr
+        year_start <- as.numeric(sub("-.*", "", year_range))
+        year_end <- as.numeric(sub(".*-", "", year_range))
+        year_start <= endyear && year_end >= startyear
       } else {
         FALSE
       }
     }))
 
   if (nrow(file_index_filtered) == 0) {
-    warning("Keine Dateien im angegebenen Zeitraum gefunden.")
+    warning("No files found in the specified period.")
     return(NULL)
   }
 
