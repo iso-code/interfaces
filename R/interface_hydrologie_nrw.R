@@ -180,17 +180,26 @@ get_pagetree <- function(page_url) {
     info <- do.call(rbind, lapply(files, function(f) {
       parts <- unlist(strsplit(f, "_"))
       year <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
-      data.frame(
-        zip = zip,
-        file = f,
-        station_id = parts[1],
-        station_name = parts[2],
-        year_start = as.numeric(sub("-.*", "", year)),
-        year_end   = as.numeric(sub(".*-", "", year)),
-        type = ifelse(length(parts) > 4, parts[4], NA),
-        unit = ifelse(length(parts) > 5, gsub("\\.csv$", "", parts[5]), NA),
-        stringsAsFactors = FALSE
-      )
+      # Only process if at least station_id and station_name are present
+if (length(parts) >= 2) {
+  # year kann dann NA sein
+  year <- regmatches(f, regexpr("\\d{4}-\\d{4}", f))
+  year_start <- if (length(year) == 1) as.numeric(sub("-.*", "", year)) else NA
+  year_end   <- if (length(year) == 1) as.numeric(sub(".*-", "", year)) else NA
+  data.frame(
+    zip = zip,
+    file = f,
+    station_id = parts[1],
+    station_name = parts[2],
+    year_start = year_start,
+    year_end   = year_end,
+    type = ifelse(length(parts) > 4, parts[4], NA),
+    unit = ifelse(length(parts) > 5, gsub("\\.csv$", "", parts[5]), NA),
+    stringsAsFactors = FALSE
+  )
+} else {
+  NULL
+}
     }))
 
     meta <- rbind(meta, info)
@@ -264,7 +273,16 @@ load_filtered_station_data <- function(page_url, file_index, startyear, endyear)
 
   for (zip_name in names(zip_groups)) {
     files_to_load <- zip_groups[[zip_name]]
-    zip_url <- paste0(page_url, zip_name)
+#zip_name_ascii <- zip_name %>%
+#  gsub("ü", "ue", ., ignore.case = FALSE) %>%
+#  gsub("Ü", "Ue", ., ignore.case = FALSE) %>%
+#  gsub("ö", "oe", ., ignore.case = FALSE) %>%
+#  gsub("Ö", "Oe", ., ignore.case = FALSE) %>%
+#  gsub("ä", "ae", ., ignore.case = FALSE) %>%
+#  gsub("Ä", "Ae", ., ignore.case = FALSE) %>%
+#  gsub("ß", "ss", ., ignore.case = FALSE)
+  zip_url <- paste0(page_url, zip_name)
+  print(zip_url)
 
     tmp_zip <- tempfile(fileext = ".zip")
     on.exit(unlink(tmp_zip), add = TRUE)
@@ -283,7 +301,7 @@ load_filtered_station_data <- function(page_url, file_index, startyear, endyear)
       value_cols <- grep("^value", names(df), value = TRUE)
       for (colname in value_cols) {
         if (any(grepl("LUECKE", df[[colname]]))) {
-          df[[colname]] <- stats::na_if(df[[colname]], "LUECKE")
+          df[[colname]] <- dplyr::na_if(df[[colname]], "LUECKE")
           df[[colname]] <- as.numeric(df[[colname]])
         }
       }
