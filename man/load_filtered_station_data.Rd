@@ -11,14 +11,14 @@ load_filtered_station_data(page_url, file_index, startyear, endyear)
 
 \item{file_index}{data.frame with columns 'zip' and 'file'.}
 
-\item{startyear}{Numeric. Start year for filtering.}
+\item{startyear}{Numeric. Start year.}
 
-\item{endyear}{Numeric. End year for filtering.}
+\item{endyear}{Numeric. End year.}
 }
 \value{
-data.frame with combined data or NULL if no files found.
+A combined `data.frame` or `NULL` if no files found.
 }
 \description{
-Loads all relevant files from ZIP archives for the specified year range,
-reads the CSV data, and combines them into a data frame.
+Loads relevant files from ZIP archives for the specified year range,
+reads CSVs, cleans values, and combines them into a single data frame.
 }

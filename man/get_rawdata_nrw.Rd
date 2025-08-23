@@ -7,16 +7,24 @@
 get_rawdata_nrw(hub, query, descr)
 }
 \arguments{
-\item{hub}{Character. Base URL or path to the data hub.}
+\item{hub}{Character. Base URL or shortcut (passed to [check_hub()]).}
 
-\item{query}{Character. Path or query string appended to `hub`.}
+\item{query}{Character. ZIP file name or shortcut (passed to [check_query_lanuv()]).}
 
-\item{descr}{Character. Filename inside the ZIP file to extract and read.}
+\item{descr}{Character. File inside the ZIP to extract (passed to [check_descr_lanuv()]).}
 }
 \value{
-A `data.frame` or `tibble` with the loaded data.
+A `tibble` (from [vroom::vroom()]) containing the dataset.
 }
 \description{
-This function downloads a ZIP file from `hub + query`,
-extracts a file named `descr`, and reads this CSV file.
+Downloads a ZIP archive from `hub + query`, extracts a file named `descr`,
+and loads it as a CSV. Useful for accessing LANUV NRW raw datasets.
+}
+\details{
+The ZIP archive is downloaded to a temporary file and removed afterwards.
+}
+\examples{
+\dontrun{
+df <- get_rawdata_nrw("raw_nrw", "pegel", "pegel_stand")
+}
 }

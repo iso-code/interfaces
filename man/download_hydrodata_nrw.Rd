@@ -7,16 +7,24 @@
 download_hydrodata_nrw(hub, query, descr = NULL)
 }
 \arguments{
-\item{hub}{Character. Base URL or path.}
+\item{hub}{Character. Base URL.}
 
 \item{query}{Character. File path or query string.}
 
-\item{descr}{Character or NULL. Optional: Only extract these files.}
+\item{descr}{Character or NULL. Optional: restrict extraction to these files.}
 }
 \value{
-An sf object (for shapefile), data.frame (for CSV), or NULL if no file found.
+An `sf` object (for shapefile), a `tibble` (for CSV), or `NULL` if no suitable file is found.
 }
 \description{
-Downloads a ZIP file from `hub + query`, extracts either all files or only
-the specified `descr`, and reads a shapefile or CSV file.
+Downloads a ZIP archive from `hub + query`, extracts either all files or
+the specified `descr`, and loads shapefiles as `sf` objects or CSVs as tibbles.
+}
+\details{
+ZIP files are downloaded and removed after extraction.
+}
+\examples{
+\dontrun{
+shp <- download_hydrodata_nrw("verified_level_nrw", "stations.zip")
+}
 }

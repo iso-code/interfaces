@@ -13,7 +13,7 @@ find_station_files_in_metadata(
 )
 }
 \arguments{
-\item{metadata}{data.frame. Metadata with columns 'station_id', 'station_name', 'year_start', 'year_end', 'zip', 'file'.}
+\item{metadata}{data.frame. With columns 'station_id', 'station_name', 'year_start', 'year_end', 'zip', 'file'.}
 
 \item{station_id}{Character or NULL. Station ID to filter.}
 
@@ -24,8 +24,8 @@ find_station_files_in_metadata(
 \item{endyear}{Numeric. End year.}
 }
 \value{
-data.frame with columns 'zip' and 'file' of matching files.
+A data.frame with columns 'zip' and 'file' of matching entries.
 }
 \description{
-Filters metadata by station ID or name and a time period (start and end year).
+Filters metadata by station ID or station name and by time period.
 }

@@ -4,7 +4,7 @@ Title: Interfacing hydrological data
 Version: 0.1.0
 Author: Marcel Gaj
 Maintainer: The package maintainer <hydrologe@posteo.com>
-Description: This package aims to provide easy access to a variety of hydrological data sources.
+Description: This package aims to provide easy access to a variety of hydrological data sources, mainly of NRW in Germany.
     It might act like an API to sources without it.
 License: GPL
 Encoding: UTF-8

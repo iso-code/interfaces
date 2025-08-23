@@ -7,13 +7,18 @@
 descr_names(page_url, zip_names)
 }
 \arguments{
-\item{page_url}{Character. Base URL of the web page containing the ZIP files.}
+\item{page_url}{Character. Base URL where the ZIP files are hosted.}
 
-\item{zip_names}{Character vector. Names of the ZIP files.}
+\item{zip_names}{Character vector. Names of the ZIP archives to inspect.}
 }
 \value{
-List with ZIP file names as keys and vectors of contained files as values.
+A named list: each ZIP file name is a key with a vector of contained files as value.
 }
 \description{
-Downloads multiple ZIP files from the web page and extracts the contained file names.
+Downloads ZIP files listed on a webpage and returns the names of all files inside them.
+}
+\examples{
+\dontrun{
+descr_names("https://www.hochwasserportal.nrw/data/downloads/", c("file1.zip"))
+}
 }

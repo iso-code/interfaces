@@ -1,4 +1,4 @@
-if (!require(pacman)) install.packages('pacman')
+if (!require(pacan)) install.packages('pacman')
 library(pacman)
 pacman::p_load(curl, tidyverse, tidyjson, jsonlite, devtools, vroom, install=TRUE)
 #####################
@@ -6,7 +6,7 @@ install_github("iso-code/interfaces")
 library(Interfaces)
 
 #read datafile from hub
-hub<-"rawlanuv"
+hub<-"raw_nrw"
 query <- "pegel"
 descr <- "pegel_stand"
 #
@@ -25,9 +25,9 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 #Example für OpenData hydro
 page_url = check_hub("verified_level_nrw")
 
-#nur zum Update des Datensatzes notwendig, Änderungen selten (jährlich)
+#nur zum Update des Datensatzes notwendig, Änderungen selten (vierteljährlich)
 page_tree<-get_pagetree(page_url)
-#saveRDS(page_tree,"page_tree_W.rds")
+saveRDS(page_tree,"page_tree_W.rds")
 page_tree<-readRDS("page_tree_W.rds")
 
 # Beispiel-Datumsbereich (ersetze durch input$plot_range in Shiny)

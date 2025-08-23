@@ -7,14 +7,17 @@
 filter_zip_by_daterange(zip_names, date_range)
 }
 \arguments{
-\item{zip_names}{Character vector. ZIP file names with year range in the name.}
+\item{zip_names}{Character vector. ZIP file names with year ranges.}
 
-\item{date_range}{Date vector of length 2 (start and end date).}
+\item{date_range}{Date vector of length 2 (start and end).}
 }
 \value{
 Filtered character vector of ZIP file names.
 }
 \description{
-Filters a list of ZIP file names containing a year range (e.g., "1980-1989"),
-and returns only those overlapping with the specified date range.
+Selects ZIP file names that contain a year range (e.g., `"1980-1989"`) and
+overlap with the given date range.
+}
+\examples{
+filter_zip_by_daterange(c("1980-1989.zip", "1990-1999.zip"), as.Date(c("1985-01-01","1992-12-31")))
 }

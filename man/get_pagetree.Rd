@@ -10,8 +10,9 @@ get_pagetree(page_url)
 \item{page_url}{Character. URL of the page with ZIP files.}
 }
 \value{
-data.frame with metadata about ZIP and contained files.
+A `data.frame` with metadata: one row per contained file.
 }
 \description{
-Reads all ZIP file names from a page and extracts information from the file names of the ZIP contents.
+Collects all ZIP file names from a page and parses file names inside them
+into structured metadata (station info, years, type, unit).
 }
