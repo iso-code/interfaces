@@ -222,15 +222,15 @@ if (length(parts) >= 2) {
 #' @export
 find_station_files_in_metadata <- function(metadata, station_id = NULL, station_name = NULL, startyear, endyear) {
   if (!is.null(station_id)) {
-    sel <- metadata$station_id == station_id
+    sel <- metadata %>% filter(station_id %in% !!station_id)
   } else if (!is.null(station_name)) {
-    sel <- metadata$station_name == station_name
+    sel <- metadata %>% filter(station_name %in% !!station_name)
   } else {
     stop("Provide either station_id or station_name.")
   }
 
-  sel <- sel & metadata$year_start <= endyear & metadata$year_end >= startyear
-  result <- metadata[sel, c("zip", "file")]
+  sel <- sel %>% filter(year_start <= endyear & year_end >= startyear)
+  result <- sel[sel, c("zip", "file")]
   rownames(result) <- NULL
   result
 }
