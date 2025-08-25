@@ -11,7 +11,7 @@ library(interfaces)
 #* @param hub
 #* @param query
 #* @param descr
-#* @get /metadata_raw_nrw
+#* @get /get_metadata_raw_nrw
 function(hub = "raw_nrw", query = "pegel", descr = "pegel_stationen.txt") {
   metadata <- get_rawdata_nrw(hub, query, descr)
   return(metadata)
@@ -21,7 +21,7 @@ function(hub = "raw_nrw", query = "pegel", descr = "pegel_stationen.txt") {
 #* @param hub
 #* @param query
 #* @param descr
-#* @get /rawdata
+#* @get /get_rawdata
 function(hub = "raw_nrw", query = "pegel", descr = "pegel_stand") {
   data <- get_rawdata_nrw(hub, query, descr)
   return(data)
@@ -33,7 +33,7 @@ function(hub = "raw_nrw", query = "pegel", descr = "pegel_stand") {
 #* @param st_id
 #* @param startyear
 #* @param endyear
-#* @get /stationdata
+#* @get /get_verified_levels_nrw
 function(st_name = "Ahmsen", st_id="", startyear = 2000, endyear = 2001) {
   page_url = check_hub("verified_level_nrw")
   if(file.exists("page_tree_W.rds")){ 

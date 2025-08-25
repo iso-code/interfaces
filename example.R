@@ -36,7 +36,7 @@ date_range <- as.Date(c("1964-11-01", "2022-11-01"))
 #get_nrw_verified_levels()
 stations<-c("Ahmsen","Welz")
 
-file_index<-find_station_files_in_metadata(page_tree, st_name = stations, startyear=2000, endyear=2022)
+file_index<-find_station_files_in_metadata(page_tree, station_name = stations, startyear=2000, endyear=2022)
 dataset<-load_filtered_station_data(page_url, file_index, 2000, 2022)
 
 ###################################

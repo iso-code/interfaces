@@ -239,7 +239,6 @@ find_station_files_in_metadata <- function(metadata, station_id = NULL, station_
     stop("Provide either station_id or station_name.")
   }
 
-  print(tibble(sel))
   sel <- sel %>% filter(year_start <= endyear & year_end >= startyear)
   #result <- sel[sel, c("zip", "file")]
   rownames(sel) <- NULL
