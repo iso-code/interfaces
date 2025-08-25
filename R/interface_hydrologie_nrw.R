@@ -220,11 +220,11 @@ if (length(parts) >= 2) {
 #'
 #' @return A data.frame with columns 'zip' and 'file' of matching entries.
 #' @export
-find_station_files_in_metadata <- function(metadata, station_id = NULL, station_name = NULL, startyear, endyear) {
+find_station_files_in_metadata <- function(metadata, st_id = NULL, st_name = NULL, startyear, endyear) {
   if (!is.null(station_id)) {
-    sel <- metadata %>% filter(station_id %in% !!station_id)
+    sel <- metadata %>% filter(station_id %in% st_id)
   } else if (!is.null(station_name)) {
-    sel <- metadata %>% filter(station_name %in% !!station_name)
+    sel <- metadata %>% filter(station_name %in% st_name)
   } else {
     stop("Provide either station_id or station_name.")
   }
