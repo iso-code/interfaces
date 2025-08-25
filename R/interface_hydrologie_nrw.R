@@ -221,15 +221,19 @@ if (length(parts) >= 2) {
 #' @return A data.frame with columns 'zip' and 'file' of matching entries.
 #' @export
 find_station_files_in_metadata <- function(metadata, st_id = NULL, st_name = NULL, startyear, endyear) {
-  if (!is.null(st_id) || any(!is.na(st_id)) ){
+  if (!all(c("year_start", "year_end") %in% names(metadata))) {
+    stop("metadata muss die Spalten 'year_start' und 'year_end' enthalten!")
+  }
+
+  if (!is.null(st_id)){
     sel <- metadata %>% filter(station_id %in% st_id)
   } else if (!is.null(st_name)) {
     sel <- metadata %>% filter(station_name %in% st_name)
   } else {
     stop("Provide either station_id or station_name.")
   }
-  head(sel)
-  sel <- sel %>% tibble() %>% filter(year_start <= endyear & year_end >= startyear)
+
+  sel <- sel %>% filter(year_start <= endyear & year_end >= startyear)
   #result <- sel[sel, c("zip", "file")]
   rownames(sel) <- NULL
   sel
