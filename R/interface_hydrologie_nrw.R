@@ -230,9 +230,9 @@ find_station_files_in_metadata <- function(metadata, station_id = NULL, station_
   }
 
   sel <- sel %>% filter(year_start <= endyear & year_end >= startyear)
-  result <- sel[sel, c("zip", "file")]
-  rownames(result) <- NULL
-  result
+  #result <- sel[sel, c("zip", "file")]
+  rownames(sel) <- NULL
+  sel
 }
 
 #' Load filtered station data from ZIP archives and combine them

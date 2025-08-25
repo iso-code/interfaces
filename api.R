@@ -1,7 +1,5 @@
-if(.Platform$OS.type=="unix") .libPaths("/home/lanuv.nrw.de/gaj/custom-r-libs")
 library(plumber)
 library(devtools)
-install_github("iso-code/interfaces")
 library(interfaces)
 
 #* @apiTitle NRW Hydro Data API
@@ -33,7 +31,7 @@ function(hub = "raw_nrw", query = "pegel", descr = "pegel_stand") {
 #* @param endyear
 #* @get /stationdata
 function(station_name = "Ahmsen", startyear = 2000, endyear = 2022) {
-  page_url <- "https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hydro/w/"
+  page_url = check_hub("verified_level_nrw")
   if(file.exists("page_tree_W.rds")){ 
     page_tree<-readRDS("page_tree_W.rds")
     } else {page_tree <- get_pagetree(page_url)}

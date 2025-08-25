@@ -37,8 +37,6 @@ date_range <- as.Date(c("1964-11-01", "2022-11-01"))
 stations<-c("Ahmsen","Welz")
 
 file_index<-find_station_files_in_metadata(page_tree, station_name = stations, startyear=2000, endyear=2022)
-startjahr<-date_range[1]
-endjahr<- date_range[2]
 dataset<-load_filtered_station_data(page_url, file_index, 2000, 2022)
 
 ###################################

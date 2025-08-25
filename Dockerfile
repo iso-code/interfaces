@@ -17,7 +17,7 @@ RUN apt-get update && \
 RUN apt-get clean 
 RUN rm -rf /var/lib/apt/lists/*
 
-RUN Rscript -e "install.packages(c('pacman','devtools', 'plumber'))" 
+RUN Rscript -e "install.packages(c('pacman','devtools', 'plumber','curl', 'tidyverse', 'tidyjson', 'jsonlite','vroom'))" 
 RUN Rscript -e "library(devtools); install_github('iso-code/interfaces')"
 
 RUN mkdir /app
