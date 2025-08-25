@@ -1,4 +1,4 @@
-if (!require(pacan)) install.packages('pacman')
+if (!require(pacman)) install.packages('pacman')
 library(pacman)
 pacman::p_load(curl, tidyverse, tidyjson, jsonlite, devtools, vroom, install=TRUE)
 #####################
