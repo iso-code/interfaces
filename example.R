@@ -3,7 +3,7 @@ library(pacman)
 pacman::p_load(curl, tidyverse, tidyjson, jsonlite, devtools, vroom, install=TRUE)
 #####################
 install_github("iso-code/interfaces")
-library(Interfaces)
+library(interfaces)
 
 #read datafile from hub
 hub<-"raw_nrw"
