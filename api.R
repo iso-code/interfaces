@@ -1,9 +1,10 @@
 if(.Platform$OS.type=="unix") .libPaths("/home/lanuv.nrw.de/gaj/custom-r-libs")
 library(plumber)
 library(devtools)
+library(tidyverse)
 install_github("iso-code/interfaces")
 library(interfaces)
-
+source("R/interface_hydrologie_nrw.R")
 #* @apiTitle NRW Hydro Data API
 
 #* Get metadata
@@ -33,7 +34,7 @@ function(hub = "raw_nrw", query = "pegel", descr = "pegel_stand") {
 #* @param startyear
 #* @param endyear
 #* @get /stationdata
-function(st_name = "Ahmsen", st_id="", startyear = 2000, endyear = 2022) {
+function(st_name = "Ahmsen", st_id="", startyear = 2000, endyear = 2001) {
   page_url = check_hub("verified_level_nrw")
   if(file.exists("page_tree_W.rds")){ 
     page_tree<-readRDS("page_tree_W.rds")
