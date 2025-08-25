@@ -1,10 +1,10 @@
-if(.Platform$OS.type=="unix") .libPaths("/home/lanuv.nrw.de/gaj/custom-r-libs")
+
 library(plumber)
 library(devtools)
 library(tidyverse)
 install_github("iso-code/interfaces")
 library(interfaces)
-source("R/interface_hydrologie_nrw.R")
+
 #* @apiTitle NRW Hydro Data API
 
 #* Get metadata
