@@ -221,9 +221,14 @@ if (length(parts) >= 2) {
 #' @return A data.frame with columns 'zip' and 'file' of matching entries.
 #' @export
 find_station_files_in_metadata <- function(metadata, st_id = NULL, st_name = NULL, startyear, endyear) {
+  
+  print(colnames(metadata))
+  
   if (!all(c("year_start", "year_end") %in% names(metadata))) {
     stop("metadata muss die Spalten 'year_start' und 'year_end' enthalten!")
   }
+  
+  
 
   if (!is.null(st_id)){
     sel <- metadata %>% filter(station_id %in% st_id)

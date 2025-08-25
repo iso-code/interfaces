@@ -31,15 +31,16 @@ function(hub = "raw_nrw", query = "pegel", descr = "pegel_stand") {
 #* @param startyear
 #* @param endyear
 #* @get /stationdata
-function(st_name = "Ahmsen", st_id=NA, startyear = 2000, endyear = 2022) {
+function(st_name = "Ahmsen", startyear = 2000, endyear = 2022) {
   page_url = check_hub("verified_level_nrw")
   if(file.exists("page_tree_W.rds")){ 
     page_tree<-readRDS("page_tree_W.rds")
     } else {page_tree <- get_pagetree(page_url)}
+  
   file_index <- find_station_files_in_metadata(
     page_tree,
-    station_id=st_id,
-    station_name = st_name,
+    st_id=st_id,
+    st_name = st_name,
     startyear = as.numeric(startyear),
     endyear = as.numeric(endyear)
   )
