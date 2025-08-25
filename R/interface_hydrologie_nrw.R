@@ -230,7 +230,7 @@ find_station_files_in_metadata <- function(metadata, station_id = NULL, station_
   
   st_id <- if (!is.null(station_id) && station_id != "") station_id else NULL
   st_name <- if (!is.null(station_name) && station_name != "") station_name else NULL
-  
+
   if (!is.null(st_id)){
     sel <- metadata %>% filter(station_id %in% st_id)
   } else if (!is.null(st_name)) {
@@ -239,6 +239,7 @@ find_station_files_in_metadata <- function(metadata, station_id = NULL, station_
     stop("Provide either station_id or station_name.")
   }
 
+  print(sel)
   sel <- sel %>% filter(year_start <= endyear & year_end >= startyear)
   #result <- sel[sel, c("zip", "file")]
   rownames(sel) <- NULL
