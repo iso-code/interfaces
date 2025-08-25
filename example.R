@@ -23,7 +23,7 @@ test<-data %>% filter(station_no %in% metadata$station_no[1])
 
 ##############################
 #Example für OpenData hydro
-page_url = get_rawdata_nrw("verified_level_nrw")
+page_url = check_hub("verified_level_nrw")
 
 #nur zum Update des Datensatzes notwendig, Änderungen selten (vierteljährlich)
 #page_tree<-get_pagetree(page_url)
@@ -35,6 +35,7 @@ date_range <- as.Date(c("1964-11-01", "2022-11-01"))
 #ezg <- "Weserzufluesse"
 #get_nrw_verified_levels()
 stations<-c("Ahmsen","Welz")
+
 file_index<-find_station_files_in_metadata(page_tree, station_name = stations, startyear=2000, endyear=2022)
 startjahr<-date_range[1]
 endjahr<- date_range[2]

@@ -2,9 +2,19 @@ if(.Platform$OS.type=="unix") .libPaths("/home/lanuv.nrw.de/gaj/custom-r-libs")
 library(plumber)
 library(devtools)
 install_github("iso-code/interfaces")
-library(Interfaces)
+library(interfaces)
 
 #* @apiTitle NRW Hydro Data API
+
+#* Get metadata
+#* @param hub
+#* @param query
+#* @param descr
+#* @get /metadata_raw_nrw
+function(hub = "raw_nrw", query = "pegel", descr = "pegel_stationen.txt") {
+  metadata <- get_rawdata_nrw(hub, query, descr)
+  return(metadata)
+}
 
 #* Get raw NRW data
 #* @param hub
@@ -16,15 +26,6 @@ function(hub = "raw_nrw", query = "pegel", descr = "pegel_stand") {
   return(data)
 }
 
-#* Get metadata
-#* @param hub
-#* @param query
-#* @param descr
-#* @get /metadata
-function(hub = "raw_nrw", query = "pegel", descr = "pegel_stationen.txt") {
-  metadata <- get_rawdata_nrw(hub, query, descr)
-  return(metadata)
-}
 
 #* Get filtered station data
 #* @param station_name
