@@ -2,7 +2,6 @@
 library(plumber)
 library(devtools)
 library(tidyverse)
-install_github("iso-code/interfaces")
 library(interfaces)
 
 #* @apiTitle NRW Hydro Data API
