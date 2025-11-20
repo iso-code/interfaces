@@ -49,18 +49,30 @@ get_rawdata_nrw <- function(hub, query, descr) {
 #' @importFrom curl curl_download
 #' @export
 descr_names <- function(page_url, zip_names) {
-  result <- list()
 
-  for (zip_name in zip_names) {
-    message("Processing: ", zip_name)
-    tmp_zip <- tempfile(fileext = ".zip")
-    on.exit(unlink(tmp_zip), add = TRUE)
+handlers(global=TRUE)
 
-    curl::curl_download(paste0(page_url, zip_name), tmp_zip)
-    result[[zip_name]] <- unzip(tmp_zip, list = TRUE)$Name
+  with_progress({
+    p <- progressor(along = zip_names)
+
+    if (.Platform$OS.type == "windows") {
+    plan(multisession, workers=1)  # oder multicore, je nach System
+  } else {
+    plan(multicore, workers=1)  # oder multicore, je nach System
   }
 
-  result
+  future_map(zip_names, function(zip_name) {
+    #Sys.sleep(3)
+    p(sprintf("Processing: %s", zip_name))   # Fortschritt aktualisieren
+    
+    tmp_zip <- tempfile(fileext = ".zip")
+    on.exit(unlink(tmp_zip), add = TRUE)
+    
+    curl::curl_download(paste0(page_url, zip_name), tmp_zip)
+    unzip(tmp_zip, list = TRUE)$Name
+  }) |>
+    setNames(zip_names)
+  })
 }
 
 #' Download hydro data from ZIP archive and read shapefile or CSV

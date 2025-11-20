@@ -134,8 +134,10 @@ list_page_zips <- function(page_url) {
   html <- httr::GET(page_url)
   content <- httr::content(html, as = "text", encoding = "UTF-8")
   # Regex for .zip names
-  zip_names <- regmatches(content, gregexpr('"name":"([^"]+\\.zip)"', content))[[1]]
-  zip_names <- gsub('.*"name":"([^"]+\\.zip)".*', '\\1', zip_names)
+#  zip_names <- regmatches(content, gregexpr('"name":"([^"]+\\.zip)"', content))[[1]]
+  zip_names <- regmatches(content, gregexpr('name="([^"]+\\.zip)"', content))[[1]]
+  #zip_names <- gsub('.*"name":"([^"]+\\.zip)".*', '\\1', zip_names)
+  zip_names <- gsub('.*name="([^"]+\\.zip)".*', '\\1', zip_names)
   zip_names <- unique(zip_names)
   return(zip_names)
 }
