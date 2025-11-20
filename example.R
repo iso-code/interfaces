@@ -16,10 +16,9 @@ data<-get_rawdata_nrw(hub,query,descr)
 descr<-"pegel_stationen"
 metadata<-get_rawdata_nrw(hub,query,"pegel_stationen.txt")
 
-data$time<-ymd_hms(data$time)
-metadata$station_no[1]
-test<-data %>% filter(station_no %in% metadata$station_no[1])
-
+col_stations<-metadata %>% filter(station_name %in% c("Roenkhausen"))
+col_data<-data %>% filter(station_no %in% col_stations$station_no)
+plot_ts(col_data, col_stations$station_name,par ="Wasserstand")
 
 ##############################
 #Example für OpenData hydro
